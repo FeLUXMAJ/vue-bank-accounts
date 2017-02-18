@@ -23,7 +23,7 @@ function storeLocally(key, data) {
 function restoreLocally(key) {
   const defaults = {
     accounts: {
-      Main: {
+      Cash: {
         name: 'Cash',
         value: 0,
       },
