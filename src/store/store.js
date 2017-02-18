@@ -4,37 +4,46 @@ import router from './../router';
 
 Vue.use(Vuex);
 
-const store = new Vuex.Store({
-  state: {
+const localStorageKey = 'bank_accounts_data';
+
+/**
+ * Store data in Local Storage
+ * @param key
+ * @param data
+ */
+function storeLocally(key, data) {
+  return localStorage.setItem(key, JSON.stringify(data));
+}
+
+/**
+ * Restore data from Local Storage
+ * @param key
+ * @returns {{accounts: {Main: {name: string, value: number}}}}
+ */
+function restoreLocally(key) {
+  const defaults = {
     accounts: {
-      mBank: {
-        name: 'mBank',
-        value: 100,
-      },
-      PEKAO: {
-        name: 'PEKAO',
-        value: 300,
-      },
-      DB: {
-        name: 'DB',
-        value: 400,
+      Main: {
+        name: 'Cash',
+        value: 0,
       },
     },
-  },
+  };
+
+  return JSON.parse(localStorage.getItem(key)) || defaults;
+}
+
+const store = new Vuex.Store({
+  state: restoreLocally(localStorageKey),
   getters: {
     accounts: state => state.accounts,
     accountByName: (state, getters) => name =>
       getters.accounts[name],
   },
   mutations: {
-    incrementAccountValue: (state, update) => {
-      state.accounts[update.name].value += update.val;
-    },
-    setAccountValue: (state, update) => {
-      state.accounts[update.name].value = update.val;
-    },
     setAccountData: (state, update) => {
       state.accounts[update.name] = update;
+      storeLocally(localStorageKey, state);
     },
   },
   actions: {
